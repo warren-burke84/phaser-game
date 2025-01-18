@@ -1,30 +1,29 @@
 import { Scene } from 'phaser';
 
-export class Game extends Scene
-{
-    constructor ()
-    {
-        super('Game');
+export class MainMenu extends Scene {
+    constructor() {
+        super('MainMenu');
     }
 
-    preload ()
-    {
+    preload() {
         this.load.setPath('assets');
         
         this.load.image('background', 'bg.png');
         this.load.image('logo', 'logo.png');
     }
 
-    create ()
-    {
-        
+    create() {
         this.add.image(512, 384, 'background');
         this.add.image(512, 350, 'logo').setDepth(100);
-        this.add.text(512, 490, 'Make something fun!\nand share it with us:\nsupport@phaser.io', {
+
+        const startButton = this.add.text(512, 600, 'Start', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
-        }).setOrigin(0.5).setDepth(100);
-        
+        }).setOrigin(0.5).setDepth(100).setInteractive();
+
+        startButton.on('pointerdown', () => {
+            this.scene.start('GameScene');
+        });
     }
 }
