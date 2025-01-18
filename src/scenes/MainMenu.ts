@@ -8,15 +8,13 @@ export class MainMenu extends Scene {
     preload() {
         this.load.setPath('assets');
         
-        this.load.image('background', 'bg.png');
         this.load.image('logo', 'logo.png');
     }
 
     create() {
-        this.add.image(512, 384, 'background');
-        this.add.image(512, 350, 'logo').setDepth(100);
+        const logo = this.add.image(this.scale.width / 2, this.scale.height / 2 - 100, 'logo').setDepth(100).setOrigin(0.5, 0.5);
 
-        const startButton = this.add.text(512, 600, 'Start', {
+        const startButton = this.add.text(this.scale.width / 2, this.scale.height / 2 + 100, 'Start', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
@@ -24,6 +22,12 @@ export class MainMenu extends Scene {
 
         startButton.on('pointerdown', () => {
             this.scene.start('GameScene');
+        });
+
+        this.scale.on('resize', (gameSize: Phaser.Structs.Size) => {
+            const { width, height } = gameSize;
+            logo.setPosition(width / 2, height / 2 - 100);
+            startButton.setPosition(width / 2, height / 2 + 100);
         });
     }
 }
