@@ -1,0 +1,7 @@
+{
+    "name": "Phaser Game Dev Container",
+    "extensions": [
+        "github.vscode-github-actions",
+        "github.copilot"
+    ]
+}
