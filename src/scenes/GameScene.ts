@@ -8,11 +8,10 @@ export class GameScene extends Scene {
     preload() {
         this.load.setPath('assets');
         this.load.image('tiles', 'iso-64x64-outside.png');
+        this.load.json('tilemap', 'tilemap.json');
     }
 
     create() {
-        //this.cameras.main.setBackgroundColor('#028af8');
-
         const backButton = this.add.text(50, 50, 'Back', {
             fontFamily: 'Arial Black', fontSize: 24, color: '#ffffff',
             stroke: '#000000', strokeThickness: 6,
@@ -25,7 +24,7 @@ export class GameScene extends Scene {
 
         const mapData = new Phaser.Tilemaps.MapData({
             width: 10,
-            height: 10,
+            height: 25,
             tileWidth: 64,
             tileHeight: 32,
             orientation: Phaser.Tilemaps.Orientation.ISOMETRIC,
@@ -38,18 +37,7 @@ export class GameScene extends Scene {
 
         const layer = map.createBlankLayer('layer', tileset, 350, 200);
 
-        const data = [
-            [ 10, 11, 12, 13, 14, 15, 16, 10, 11, 12 ],
-            [ 13, 11, 10, 12, 12, 15, 16, 10, 16, 10 ],
-            [ 12, 10, 16, 13, 14, 15, 16, 16, 13, 12 ],
-            [ 10, 11, 12, 13, 14, 15, 16, 10, 11, 12 ],
-            [ 13, 11, 10, 12, 12, 15, 16, 10, 16, 10 ],
-            [ 12, 10, 16, 13, 14, 15, 16, 16, 13, 12 ],
-            [ 10, 11, 12, 13, 14, 15, 16, 10, 11, 12 ],
-            [ 13, 11, 10, 12, 12, 15, 16, 10, 16, 10 ],
-            [ 12, 10, 16, 13, 14, 15, 16, 16, 13, 12 ],
-            [ 10, 11, 12, 13, 14, 15, 16, 10, 11, 12 ]
-        ];
+        const data = this.cache.json.get('tilemap').data;
 
         let y = 0;
 
