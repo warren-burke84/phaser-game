@@ -3,5 +3,9 @@
     "extensions": [
         "github.vscode-github-actions",
         "github.copilot"
-    ]
+    ],
+    "tasks": {
+      "build": "npm install && npm run build",
+      "launch": "npm run dev"
+    }
 }
