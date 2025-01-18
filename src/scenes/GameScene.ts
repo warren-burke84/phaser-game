@@ -1,8 +1,15 @@
 import { Scene } from 'phaser';
 
 export class GameScene extends Scene {
+    private isDragging: boolean;
+    private dragStartX: number;
+    private dragStartY: number;
+
     constructor() {
         super('GameScene');
+        this.isDragging = false;
+        this.dragStartX = 0;
+        this.dragStartY = 0;
     }
 
     preload() {
@@ -17,6 +24,8 @@ export class GameScene extends Scene {
             stroke: '#000000', strokeThickness: 6,
             align: 'center'
         }).setOrigin(0.5).setDepth(100).setInteractive();
+
+        backButton.setScrollFactor(0);
 
         backButton.on('pointerdown', () => {
             this.scene.start('MainMenu');
@@ -47,5 +56,30 @@ export class GameScene extends Scene {
             });
             y++;
         });
+
+        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            this.isDragging = true;
+            this.dragStartX = pointer.x;
+            this.dragStartY = pointer.y;
+        });
+
+        this.input.on('pointerup', () => {
+            this.isDragging = false;
+        });
+
+        this.input.on('pointermove', this.handleDrag, this);
+    }
+
+    handleDrag(pointer: Phaser.Input.Pointer) {
+        if (this.isDragging) {
+            const dragX = pointer.x - this.dragStartX;
+            const dragY = pointer.y - this.dragStartY;
+
+            this.cameras.main.scrollX -= dragX;
+            this.cameras.main.scrollY -= dragY;
+
+            this.dragStartX = pointer.x;
+            this.dragStartY = pointer.y;
+        }
     }
 }
