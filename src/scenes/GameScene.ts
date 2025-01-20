@@ -17,6 +17,7 @@ export class GameScene extends Scene {
         this.load.image('tiles', 'iso-64x64-outside.png');
         this.load.image('tiles2', 'iso-64x64-building.png');
         this.load.tilemapTiledJSON('map', 'isorpg.json');
+        this.load.image('house', 'rem_0002.png');
     }
 
     create ()
@@ -49,6 +50,8 @@ export class GameScene extends Scene {
         map.createLayer('Tile Layer 4', [ tileset1, tileset2 ]);
         map.createLayer('Tile Layer 5', [ tileset1, tileset2 ]);
 
+        this.placeHouses();
+
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             this.isDragging = true;
             this.dragStartX = pointer.x;
@@ -60,6 +63,10 @@ export class GameScene extends Scene {
         });
 
         this.input.on('pointermove', this.handleDrag, this);
+    }
+
+    placeHouses() {
+        const house_1 = this.add.image(240, 370, 'house');
     }
 
     handleDrag(pointer: Phaser.Input.Pointer) {
