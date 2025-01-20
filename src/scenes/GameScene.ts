@@ -15,10 +15,12 @@ export class GameScene extends Scene {
     preload() {
         this.load.setPath('assets');
         this.load.image('tiles', 'iso-64x64-outside.png');
-        this.load.json('tilemap', 'tilemap.json');
+        this.load.image('tiles2', 'iso-64x64-building.png');
+        this.load.tilemapTiledJSON('map', 'isorpg.json');
     }
 
-    create() {
+    create ()
+    {
         const backButton = this.add.text(50, 50, 'Back', {
             fontFamily: 'Arial Black', fontSize: 24, color: '#ffffff',
             stroke: '#000000', strokeThickness: 6,
@@ -31,31 +33,21 @@ export class GameScene extends Scene {
             this.scene.start('MainMenu');
         });
 
-        const mapData = new Phaser.Tilemaps.MapData({
-            width: 10,
-            height: 25,
-            tileWidth: 64,
-            tileHeight: 32,
-            orientation: Phaser.Tilemaps.Orientation.ISOMETRIC,
-            format: Phaser.Tilemaps.Formats.ARRAY_2D
-        });
+        const map = this.add.tilemap('map');
+        console.log(map);
+        const tileset1 = map.addTilesetImage('iso-64x64-outside', 'tiles');
+        const tileset2 = map.addTilesetImage('iso-64x64-building', 'tiles2');
 
-        const map = new Phaser.Tilemaps.Tilemap(this, mapData);
+        if (!tileset1 || !tileset2) {
+            console.error('Tileset not found');
+            return;
+        }
 
-        const tileset = map.addTilesetImage('iso-64x64-outside', 'tiles');
-
-        const layer = map.createBlankLayer('layer', tileset, 350, 200);
-
-        const data = this.cache.json.get('tilemap').data;
-
-        let y = 0;
-
-        data.forEach(row => {
-            row.forEach((tile, x) => {
-                layer.putTileAt(tile, x, y);
-            });
-            y++;
-        });
+        map.createLayer('Tile Layer 1', [ tileset1, tileset2 ]);
+        map.createLayer('Tile Layer 2', [ tileset1, tileset2 ]);
+        map.createLayer('Tile Layer 3', [ tileset1, tileset2 ]);
+        map.createLayer('Tile Layer 4', [ tileset1, tileset2 ]);
+        map.createLayer('Tile Layer 5', [ tileset1, tileset2 ]);
 
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             this.isDragging = true;
