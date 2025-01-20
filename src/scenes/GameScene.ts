@@ -6,6 +6,8 @@ export class GameScene extends Scene {
     private dragStartY: number;
     private graphics: Phaser.GameObjects.Graphics;
     private coordinatesText: Phaser.GameObjects.Text;
+    private tileHeight: number = 32;
+    private tileWidth: number = 64;
 
     constructor() {
         super('GameScene');
@@ -47,12 +49,6 @@ export class GameScene extends Scene {
         }
 
         map.createLayer('Tile Layer 1', [ tileset1, tileset2 ]);
-        // map.createLayer('Tile Layer 2', [ tileset1, tileset2 ]);
-        // map.createLayer('Tile Layer 3', [ tileset1, tileset2 ]);
-        // map.createLayer('Tile Layer 4', [ tileset1, tileset2 ]);
-        // map.createLayer('Tile Layer 5', [ tileset1, tileset2 ]);
-
-        this.placeHouses();
 
         this.graphics = this.add.graphics();
         this.coordinatesText = this.add.text(this.scale.width / 2, 20, '', {
@@ -72,13 +68,9 @@ export class GameScene extends Scene {
         this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
             this.handleDrag(pointer);
             this.highlightCell(pointer);
-            this.displayCoordinates(pointer);
         });
     }
 
-    placeHouses() {
-        const house_1 = this.add.image(240, 370, 'house');
-    }
 
     handleDrag(pointer: Phaser.Input.Pointer) {
         if (this.isDragging) {
@@ -95,32 +87,28 @@ export class GameScene extends Scene {
 
     highlightCell(pointer: Phaser.Input.Pointer) {
         const worldPoint = pointer.positionToCamera(this.cameras.main) as Phaser.Math.Vector2;
-        const tileX = Math.floor(worldPoint.x / 64);
-        const tileY = Math.floor(worldPoint.y / 64);
 
         this.graphics.clear();
         this.graphics.lineStyle(2, 0xffffff, 1);
 
-        const isoX = tileX * 64;
-        const isoY = tileY * 32;
+        const startX = 32;
+        const startY = 32;
+        this.drawIsoShape(startX, startY);
+        this.drawIsoShape(startX + this.tileWidth/2, startY + this.tileHeight/2);
+        this.drawIsoShape(startX - this.tileWidth/2, startY + this.tileHeight/2);
+        this.drawIsoShape(startX, startY + this.tileHeight);
 
-        this.graphics.beginPath();
-        this.graphics.moveTo(isoX, isoY);
-        this.graphics.lineTo(isoX + 32, isoY + 16);
-        this.graphics.lineTo(isoX, isoY + 32);
-        this.graphics.lineTo(isoX - 32, isoY + 16);
-        this.graphics.closePath();
-        this.graphics.strokePath();
+        this.coordinatesText.setText(`World: (${worldPoint.x}, ${worldPoint.y})`);
     }
 
-    displayCoordinates(pointer: Phaser.Input.Pointer) {
-        const worldPoint = pointer.positionToCamera(this.cameras.main) as Phaser.Math.Vector2;
-        const tileX = Math.floor(worldPoint.x / 64);
-        const tileY = Math.floor(worldPoint.y / 64);
+    drawIsoShape(startX: number, startY: number) {
 
-        const isoX = tileX * 64;
-        const isoY = tileY * 32;
-
-        this.coordinatesText.setText(`Tile: (${tileX}, ${tileY}) Iso: (${isoX}, ${isoY}) World: (${worldPoint.x}, ${worldPoint.y})`);
+        this.graphics.beginPath();
+        this.graphics.moveTo(startX, startY);
+        this.graphics.lineTo(startX + this.tileWidth/2, startY + this.tileHeight/2);
+        this.graphics.lineTo(startX, startY + this.tileHeight);
+        this.graphics.lineTo(startX - this.tileWidth/2, startY + this.tileHeight/2);
+        this.graphics.closePath();
+        this.graphics.strokePath();
     }
 }
