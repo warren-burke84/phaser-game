@@ -4,12 +4,15 @@ export class GameScene extends Scene {
     private isDragging: boolean;
     private dragStartX: number;
     private dragStartY: number;
+    private house: Phaser.GameObjects.Image;
+    private housePlaced: boolean;
 
     constructor() {
         super('GameScene');
         this.isDragging = false;
         this.dragStartX = 0;
         this.dragStartY = 0;
+        this.housePlaced = false;
     }
 
     preload() {
@@ -44,29 +47,50 @@ export class GameScene extends Scene {
             return;
         }
 
-        map.createLayer('Tile Layer 1', [ tileset1, tileset2 ]);
-        map.createLayer('Tile Layer 2', [ tileset1, tileset2 ]);
-        map.createLayer('Tile Layer 3', [ tileset1, tileset2 ]);
-        map.createLayer('Tile Layer 4', [ tileset1, tileset2 ]);
-        map.createLayer('Tile Layer 5', [ tileset1, tileset2 ]);
+        const layer1 = map.createLayer('Tile Layer 1', [ tileset1, tileset2 ]);
+        //map.createLayer('Tile Layer 2', [ tileset1, tileset2 ]);
+        //map.createLayer('Tile Layer 3', [ tileset1, tileset2 ]);
+        //map.createLayer('Tile Layer 4', [ tileset1, tileset2 ]);
+        //map.createLayer('Tile Layer 5', [ tileset1, tileset2 ]);
 
-        this.placeHouses();
+
+        this.house = this.add.image(0, 0, 'house').setAlpha(0.5);
 
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            this.isDragging = true;
-            this.dragStartX = pointer.x;
-            this.dragStartY = pointer.y;
+            if (pointer.leftButtonDown() && !this.housePlaced) {
+                this.house.setPosition(pointer.worldX, pointer.worldY);
+                this.house.setAlpha(1);
+                this.housePlaced = true;
+            } else {
+                this.isDragging = true;
+                this.dragStartX = pointer.x;
+                this.dragStartY = pointer.y;
+            }
         });
 
         this.input.on('pointerup', () => {
             this.isDragging = false;
         });
 
-        this.input.on('pointermove', this.handleDrag, this);
-    }
+        this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+            if (this.isDragging) {
+                const dragX = pointer.x - this.dragStartX;
+                const dragY = pointer.y - this.dragStartY;
 
-    placeHouses() {
-        const house_1 = this.add.image(240, 370, 'house');
+                this.cameras.main.scrollX -= dragX;
+                this.cameras.main.scrollY -= dragY;
+
+                this.dragStartX = pointer.x;
+                this.dragStartY = pointer.y;
+            } else if (!this.housePlaced) {
+                const tileX = Math.floor(pointer.worldX / 64) * 64;
+                const tileY = Math.floor(pointer.worldY / 64) * 64;
+                this.house.setPosition(tileX, tileY);
+            }
+        });
+
+        // Center the map on the screen
+        this.cameras.main.centerOn(map.widthInPixels / 2, map.heightInPixels / 2);
     }
 
     handleDrag(pointer: Phaser.Input.Pointer) {
