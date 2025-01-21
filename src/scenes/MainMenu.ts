@@ -1,4 +1,5 @@
 import { Scene } from 'phaser';
+import { CartesianGridScene } from './CartesianGridScene';
 
 export class MainMenu extends Scene {
     constructor() {
@@ -24,10 +25,21 @@ export class MainMenu extends Scene {
             this.scene.start('GameScene');
         });
 
+        const gridButton = this.add.text(this.scale.width / 2, this.scale.height / 2 + 200, 'Cartesian Grid', {
+            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
+            stroke: '#000000', strokeThickness: 8,
+            align: 'center'
+        }).setOrigin(0.5).setDepth(100).setInteractive();
+
+        gridButton.on('pointerdown', () => {
+            this.scene.start('CartesianGridScene');
+        });
+
         this.scale.on('resize', (gameSize: Phaser.Structs.Size) => {
             const { width, height } = gameSize;
             logo.setPosition(width / 2, height / 2 - 100);
             startButton.setPosition(width / 2, height / 2 + 100);
+            gridButton.setPosition(width / 2, height / 2 + 200);
         });
     }
 }
