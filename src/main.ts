@@ -1,5 +1,6 @@
 import { MainMenu } from './scenes/MainMenu';
 import { GameScene } from './scenes/GameScene';
+import { CartesianGridScene } from './scenes/CartesianGridScene';
 import { AUTO, Game, Scale, Types } from 'phaser';
 
 //  Find out more information about the Game Config at:
@@ -16,7 +17,8 @@ const config: Types.Core.GameConfig = {
     },
     scene: [
         MainMenu,
-        GameScene
+        GameScene,
+        CartesianGridScene
     ]
 };
 
