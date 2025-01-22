@@ -1,10 +1,13 @@
 import { Scene } from 'phaser';
 
 export class CartesianGridScene extends Scene {
-    private mouseText: Phaser.GameObjects.Text;
     private isDragging: boolean;
     private dragStartX: number;
     private dragStartY: number;
+    private tileHeight: number = 32;
+    private tileWidth: number = 64;
+    private map: Phaser.Tilemaps.Tilemap;
+    private layer: Phaser.GameObjects.Layer;
 
     constructor() {
         super('CartesianGridScene');
@@ -14,45 +17,17 @@ export class CartesianGridScene extends Scene {
     }
 
     preload() {
-        // Load any necessary assets here
+        this.load.setPath('assets');
+        this.load.image('tiles', 'iso-64x64-outside.png');
+        this.load.image('tiles2', 'iso-64x64-building.png');
+        this.load.tilemapTiledJSON('map', 'isorpg.json');
+        this.load.image('house', 'rem_0002.png');
     }
 
     create() {
-        const graphics = this.add.graphics();
-        const width = this.scale.width;
-        const height = this.scale.height;
-        const cellSize = 50;
-
-        graphics.lineStyle(1, 0xffffff, 1);
-
-        // Draw vertical lines
-        for (let x = 0; x <= width; x += cellSize) {
-            graphics.moveTo(x, 0);
-            graphics.lineTo(x, height);
-        }
-
-        // Draw horizontal lines
-        for (let y = 0; y <= height; y += cellSize) {
-            graphics.moveTo(0, y);
-            graphics.lineTo(width, y);
-        }
-
-        graphics.strokePath();
-
-        // Label the axis with values
-        for (let x = 0; x <= width; x += cellSize) {
-            this.add.text(x, 0, `${x}`, { font: '12px Arial', fill: '#ffffff' }).setOrigin(0.5, 0);
-        }
-
-        for (let y = 0; y <= height; y += cellSize) {
-            this.add.text(0, y, `${y}`, { font: '12px Arial', fill: '#ffffff' }).setOrigin(0, 0.5);
-        }
-
-        // Display mouse position
-        this.mouseText = this.add.text(10, 10, '', { font: '16px Arial', fill: '#ffffff' });
-        this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-            this.mouseText.setText(`X: ${pointer.x}, Y: ${pointer.y}`);
-        });
+        this.addMap();
+        this.addMouseEvents();
+        this.layer = this.add.layer();
 
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             this.isDragging = true;
@@ -65,6 +40,47 @@ export class CartesianGridScene extends Scene {
         });
 
         this.input.on('pointermove', this.handleDrag, this);
+    }
+
+    addMap(){
+        this.map = this.add.tilemap('map');
+        console.log(this.map);
+        const tileset1 = this.map.addTilesetImage('iso-64x64-outside', 'tiles');
+        const tileset2 = this.map.addTilesetImage('iso-64x64-building', 'tiles2');
+
+        if (!tileset1 || !tileset2) {
+            console.error('Tileset not found');
+            return;
+        }
+
+        this.map.createLayer('Tile Layer 1', [ tileset1, tileset2 ]);
+    }
+
+    addMouseEvents() {
+        this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+            const tile = this.map.getTileAtWorldXY(pointer.worldX, pointer.worldY);
+            if (tile) {
+                this.highlightCell(tile.pixelX + 32, tile.pixelY + 32);
+            }
+        });
+    }
+
+    highlightCell(startX: number, startY: number) {
+        this.drawIsoShape(startX, startY);
+    }
+
+    drawIsoShape(startX: number, startY: number) {
+        this.layer.removeAll(true);
+        const graphics = this.add.graphics();
+        graphics.lineStyle(2, 0xffffff, 1);
+        graphics.beginPath();
+        graphics.moveTo(startX, startY);
+        graphics.lineTo(startX + this.tileWidth/2, startY + this.tileHeight/2);
+        graphics.lineTo(startX, startY + this.tileHeight);
+        graphics.lineTo(startX - this.tileWidth/2, startY + this.tileHeight/2);
+        graphics.closePath();
+        graphics.strokePath();
+        this.layer.add(graphics);
     }
 
     handleDrag(pointer: Phaser.Input.Pointer) {

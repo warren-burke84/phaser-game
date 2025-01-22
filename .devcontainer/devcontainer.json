@@ -3,7 +3,8 @@
     "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
     "extensions": [
         "github.vscode-github-actions",
-        "github.copilot"
+        "github.copilot",
+        "github.copilot-workspace"
     ],
     "tasks": {
       "build": "npm install && npm run build",
