@@ -1,5 +1,4 @@
 import { Scene } from 'phaser';
-import { CartesianGridScene } from './CartesianGridScene';
 
 export class MainMenu extends Scene {
     constructor() {
@@ -25,13 +24,23 @@ export class MainMenu extends Scene {
             this.scene.start('GameScene');
         });
 
-        const gridButton = this.add.text(this.scale.width / 2, this.scale.height / 2 + 200, 'Cartesian Grid', {
+        const movementButton = this.add.text(this.scale.width / 2, this.scale.height / 2 + 200, 'Movement', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5).setDepth(100).setInteractive();
 
-        gridButton.on('pointerdown', () => {
+        movementButton.on('pointerdown', () => {
+            this.scene.start('MovementScene');
+        });
+
+        const cartesianButton = this.add.text(this.scale.width / 2, this.scale.height / 2 + 300, 'Cartesian Grid', {
+            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
+            stroke: '#000000', strokeThickness: 8,
+            align: 'center'
+        }).setOrigin(0.5).setDepth(100).setInteractive();
+
+        cartesianButton.on('pointerdown', () => {
             this.scene.start('CartesianGridScene');
         });
 
@@ -39,7 +48,8 @@ export class MainMenu extends Scene {
             const { width, height } = gameSize;
             logo.setPosition(width / 2, height / 2 - 100);
             startButton.setPosition(width / 2, height / 2 + 100);
-            gridButton.setPosition(width / 2, height / 2 + 200);
+            movementButton.setPosition(width / 2, height / 2 + 200);
+            cartesianButton.setPosition(width / 2, height / 2 + 300);
         });
     }
 }
